@@ -56,45 +56,16 @@ const PublicForm: React.FC = () => {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isQuestionFocused, setIsQuestionFocused] = useState(false);
   const [isConversationComplete, setIsConversationComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [hasStartedConversation, setHasStartedConversation] = useState(false);
 
   const displayedQuestion = useTypingEffect(currentQuestion, 30); // Speed set to 30ms
 
-  const fetchFormDetails = useCallback(async () => {
-    console.log('PublicForm: Attempting to fetch form details for formId:', formId);
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`);
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('PublicForm: Failed to fetch form details. Response:', response.status, errorText);
-        throw new Error(`Form not found or failed to fetch details. Status: ${response.status}`);
-      }
-      const data: FormDetails = await response.json();
-      console.log('PublicForm: Successfully fetched form details:', data);
-      setFormDetails(data);
-      setIsLoading(false);
-      // Start the conversation once form details are loaded
-      fetchNextQuestion([], data); // Pass data directly
-    } catch (err) {
-      console.error('PublicForm: Error fetching form details:', err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
-      setIsLoading(false);
-    }
-  }, [formId]);
-
-  useEffect(() => {
-    console.log('PublicForm: useEffect triggered with formId:', formId);
-    if (formId) {
-      fetchFormDetails();
-    }
-  }, [formId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchNextQuestion = async (history: Message[], currentFormDetails: FormDetails | null = null) => {
+  const fetchNextQuestion = useCallback(async (history: Message[], currentFormDetails: FormDetails | null = null) => {
     console.log('PublicForm: Attempting to fetch next question. History length:', history.length);
     setIsLoading(true);
     setError(null);
@@ -126,10 +97,10 @@ const PublicForm: React.FC = () => {
         
         if (data.next_question.includes('Thank you for your time')) {
             setIsConversationComplete(true);
-            setConversation(prev => [...prev, { role: 'assistant', content: data.next_question }]);
-        } else {
-            setConversation(prev => [...prev, { role: 'assistant', content: data.next_question }]);
         }
+        
+        // Always add to conversation
+        setConversation(prev => [...prev, { role: 'assistant', content: data.next_question }]);
       }
     } catch (err) {
       console.error('PublicForm: Error fetching next question:', err);
@@ -137,16 +108,60 @@ const PublicForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formDetails]);
 
-  const handleAnswerSubmit = (e: FormEvent) => {
+  const fetchFormDetails = useCallback(async () => {
+    console.log('PublicForm: Attempting to fetch form details for formId:', formId);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('PublicForm: Failed to fetch form details. Response:', response.status, errorText);
+        throw new Error(`Form not found or failed to fetch details. Status: ${response.status}`);
+      }
+      const data: FormDetails = await response.json();
+      console.log('PublicForm: Successfully fetched form details:', data);
+      setFormDetails(data);
+      setIsLoading(false);
+      // Start the conversation only if it hasn't started yet
+      if (!hasStartedConversation) {
+        setHasStartedConversation(true);
+        fetchNextQuestion([], data);
+      }
+    } catch (err) {
+      console.error('PublicForm: Error fetching form details:', err);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
+      setIsLoading(false);
+    }
+  }, [formId, fetchNextQuestion, hasStartedConversation]);
+
+  useEffect(() => {
+    console.log('PublicForm: useEffect triggered with formId:', formId);
+    if (formId) {
+      fetchFormDetails();
+    }
+  }, [formId, fetchFormDetails]);
+
+  const handleAnswerSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!currentAnswer.trim() || isConversationComplete) return;
+    console.log('Form submitted with answer:', currentAnswer);
+    if (!currentAnswer.trim() || isConversationComplete || isSubmitting) return;
 
+    setIsSubmitting(true);
     const newHistory: Message[] = [...conversation, { role: 'user', content: currentAnswer }];
+    console.log('New history:', newHistory);
     setConversation(newHistory);
     setCurrentAnswer('');
-    fetchNextQuestion(newHistory);
+    
+    try {
+      await fetchNextQuestion(newHistory);
+    } catch (error) {
+      console.error('Error in handleAnswerSubmit:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading && !formDetails) {
@@ -196,13 +211,13 @@ const PublicForm: React.FC = () => {
                     onChange={(e) => setCurrentAnswer(e.target.value)}
                     onFocus={() => setIsQuestionFocused(true)}
                     onBlur={() => setIsQuestionFocused(currentAnswer.trim() !== '')}
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     required
                     className="form-control"
                 />
                 {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
-                <Button className="btn-next" type="submit" disabled={isLoading}>
-                    {isLoading ? <Spinner as="span" animation="border" size="sm" /> : 'Next →'}
+                <Button className="btn-next" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Spinner as="span" animation="border" size="sm" /> : 'Next →'}
                 </Button>
             </Form>
         ) : (

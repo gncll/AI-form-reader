@@ -9,6 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 // Simple forms data
+let submissions = [];
+
 let forms = [
   {
     id: 1,
@@ -75,6 +77,20 @@ app.post('/api/generate_question', async (req, res) => {
 
     // Generate next question using OpenAI
     const nextQuestion = await generateQuestionWithOpenAI(form, history);
+    
+    // If conversation is complete, save submission
+    if (nextQuestion.includes("Thank you for your time")) {
+      const userResponses = history.filter(msg => msg.role === 'user').map(msg => msg.content);
+      const summary = userResponses.join(" | ");
+      
+      submissions.push({
+        id: submissions.length + 1,
+        form_id,
+        summary,
+        created_at: new Date().toISOString()
+      });
+      console.log('Submission saved:', { form_id, summary });
+    }
     
     res.json({ next_question: nextQuestion });
   } catch (error) {
@@ -147,7 +163,13 @@ Rules:
 }
 
 app.get('/api/submissions', (req, res) => {
-  res.json([]);
+  const { form_id } = req.query;
+  if (form_id) {
+    const formSubmissions = submissions.filter(s => s.form_id == form_id);
+    res.json(formSubmissions);
+  } else {
+    res.json(submissions);
+  }
 });
 
 app.listen(PORT, () => {
