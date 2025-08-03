@@ -1,0 +1,313 @@
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#root {
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    width: 250px; /* Fixed width for sidebar */
+    min-width: 250px;
+    background-color: #1a1a1a !important; /* Darker background for sidebar */
+    border-right: 1px solid #333; /* Separator */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .user-profile h5 {
+    color: #fff;
+}
+
+.sidebar .nav-link {
+    color: #ccc;
+}
+
+.sidebar .nav-link:hover {
+    color: #8B5CF6;
+}
+
+.sidebar .form-control {
+    background-color: #333 !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.sidebar .form-control::placeholder {
+    color: #aaa !important;
+}
+
+.sidebar .btn-secondary {
+    background-color: #333 !important;
+    border-color: #333 !important;
+}
+
+.sidebar .btn-secondary:hover {
+    background-color: #444 !important;
+    border-color: #444 !important;
+}
+
+.container {
+    /* Removed display: flex, justify-content: center, width: 100% as main content area is now flex-grow-1 */
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.form-container {
+    max-width: 700px;
+    padding: 2rem;
+    width: 100%;
+    margin: auto; /* Center the form within its content area */
+}
+
+.question {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+    transition: color 0.3s ease;
+    min-height: 100px; /* To prevent layout shift during typing */
+}
+
+.question-inactive {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-control {
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: none !important;
+    color: #fff !important;
+    border-radius: 0 !important;
+    padding: 0.8rem 0 !important;
+    margin-bottom: 2rem !important;
+    font-size: 1.3rem !important;
+    box-shadow: none !important;
+    resize: none !important;
+}
+
+.form-control:focus {
+    background-color: transparent !important;
+    border-bottom: none !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-style: normal !important;
+    font-size: 1.3rem !important;
+}
+
+.btn-next {
+    background-color: #8B5CF6;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    font-weight: bold;
+    float: right;
+    transition: all 0.3s ease;
+}
+
+.btn-next:hover {
+    background-color: #C084FC;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.intro-container {
+    text-align: center;
+    max-width: 700px;
+    padding: 2rem;
+    margin: auto; /* Center the intro container */
+}
+
+.intro-title {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.intro-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+.btn-start {
+    background-color: #8B5CF6;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-start:hover {
+    background-color: #C084FC;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.conversation-history {
+    margin-bottom: 2rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 15px; /* For scrollbar */
+}
+
+.history-item {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-item strong {
+    color: #8B5CF6;
+}
+
+/* Admin Dashboard Specific Styles */
+.form-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-card-grid .card {
+    background-color: #282828 !important; /* Darker card background */
+    border: 1px solid #444;
+}
+
+.form-card-grid .card-footer {
+    background-color: #1a1a1a !important;
+    border-top: 1px solid #444;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #333;
+        padding: 1rem !important;
+    }
+    
+    .sidebar .user-profile {
+        margin-bottom: 2rem !important;
+    }
+    
+    .sidebar .user-profile h5 {
+        font-size: 1rem;
+    }
+    
+    .sidebar .form-control {
+        font-size: 0.9rem !important;
+    }
+    
+    .sidebar .nav-link {
+        padding: 0.5rem 0 !important;
+        font-size: 0.9rem;
+    }
+    
+    #root {
+        flex-direction: column;
+    }
+    .form-container {
+        padding: 1.5rem;
+        max-width: 100%;
+    }
+    .question { font-size: 1.6rem; }
+    .form-control, .form-control::placeholder { font-size: 1rem; }
+    .intro-title { font-size: 2.5rem; }
+    .intro-subtitle { font-size: 1.1rem; }
+    
+    /* Admin Dashboard Mobile Adjustments */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch !important;
+    }
+    
+    .card-footer.d-flex {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .card-footer .btn {
+        flex: 1;
+        min-width: 80px;
+        font-size: 0.8rem;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .question { font-size: 1.4rem; }
+    .btn-next, .btn-start { padding: 0.6rem 1.5rem; }
+    
+    /* Very small screens */
+    .card-footer .btn {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.5rem;
+        min-width: 70px;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Public Form Page Specific Styles */
+.public-form-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.public-form-page .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 700px;
+    padding: 2rem;
+}
