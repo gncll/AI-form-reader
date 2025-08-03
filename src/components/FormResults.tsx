@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Table, Button, Spinner, Alert, Card } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -29,9 +29,9 @@ const FormResults: React.FC = () => {
       fetchFormDetails();
       fetchSubmissions();
     }
-  }, [formId]);
+  }, [formId, fetchFormDetails, fetchSubmissions]);
 
-  const fetchFormDetails = async () => {
+  const fetchFormDetails = useCallback(async () => {
     try {
       const response = await fetch(`/api/forms/${formId}`);
       if (!response.ok) {
@@ -42,9 +42,9 @@ const FormResults: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
     }
-  };
+  }, [formId]);
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -59,7 +59,7 @@ const FormResults: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formId]);
 
   return (
     <Container className="mt-5">

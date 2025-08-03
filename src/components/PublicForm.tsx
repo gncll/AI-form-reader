@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, FormEvent, useRef } from 'react';
-import { Container, Form, Button, Spinner, Alert } from 'react-bootstrap';
+import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import '../App.css'; // Use App.css for styling
 
@@ -20,7 +20,6 @@ interface FormDetails {
 // A more robust and reliable typing effect hook
 const useTypingEffect = (text: string, speed: number) => {
     const [displayText, setDisplayText] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
 
     useEffect(() => {
         if (!text) {
@@ -29,7 +28,6 @@ const useTypingEffect = (text: string, speed: number) => {
         }
 
         setDisplayText('');
-        setIsTyping(true);
         let currentIndex = 0;
 
         const typeChar = () => {
@@ -37,8 +35,6 @@ const useTypingEffect = (text: string, speed: number) => {
                 setDisplayText(text.substring(0, currentIndex + 1));
                 currentIndex++;
                 setTimeout(typeChar, speed);
-            } else {
-                setIsTyping(false);
             }
         };
 
@@ -47,7 +43,6 @@ const useTypingEffect = (text: string, speed: number) => {
 
         return () => {
             clearTimeout(startTimeout);
-            setIsTyping(false);
         };
     }, [text, speed]);
 
@@ -72,9 +67,9 @@ const PublicForm: React.FC = () => {
     if (formId) {
       fetchFormDetails();
     }
-  }, [formId]);
+  }, [formId, fetchFormDetails]);
 
-  const fetchFormDetails = async () => {
+  const fetchFormDetails = useCallback(async () => {
     console.log('PublicForm: Attempting to fetch form details for formId:', formId);
     setIsLoading(true);
     setError(null);
@@ -96,7 +91,7 @@ const PublicForm: React.FC = () => {
       setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
       setIsLoading(false);
     }
-  };
+  }, [formId]);
 
   const fetchNextQuestion = async (history: Message[], currentFormDetails: FormDetails | null = null) => {
     console.log('PublicForm: Attempting to fetch next question. History length:', history.length);

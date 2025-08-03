@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
 import './App.css';
 
 import AdminDashboard from './components/AdminDashboard';
