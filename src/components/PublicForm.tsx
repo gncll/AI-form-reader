@@ -61,7 +61,7 @@ const PublicForm: React.FC = () => {
   const [isQuestionFocused, setIsQuestionFocused] = useState(false);
   const [isConversationComplete, setIsConversationComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
-  const [hasStartedConversation, setHasStartedConversation] = useState(false);
+  // const [hasStartedConversation, setHasStartedConversation] = useState(false);
   const hasStartedRef = useRef(false);
 
   const displayedQuestion = useTypingEffect(currentQuestion, 30); // Speed set to 30ms
@@ -129,7 +129,7 @@ const PublicForm: React.FC = () => {
       // Start the conversation only if it hasn't started yet
       if (!hasStartedRef.current) {
         hasStartedRef.current = true;
-        setHasStartedConversation(true);
+        // setHasStartedConversation(true);
         // Directly call API instead of using fetchNextQuestion to avoid dependency issues
         setTimeout(() => fetchNextQuestion([], data), 100);
       }
