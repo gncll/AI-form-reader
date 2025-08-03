@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Button, Spinner, Alert, Modal, Form as BootstrapForm, Card, Row, Col } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import config from '../config';
 
 interface Form {
   id: number;
@@ -28,7 +29,7 @@ const AdminDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/forms');
+      const response = await fetch(`${config.API_BASE_URL}/api/forms`);
       if (!response.ok) {
         throw new Error('Failed to fetch forms.');
       }
@@ -46,7 +47,7 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch(`/api/forms/${formId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

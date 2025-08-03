@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Table, Button, Spinner, Alert, Card } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
+import config from '../config';
 
 interface Submission {
   id: number;
@@ -24,16 +25,9 @@ const FormResults: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (formId) {
-      fetchFormDetails();
-      fetchSubmissions();
-    }
-  }, [formId, fetchFormDetails, fetchSubmissions]);
-
   const fetchFormDetails = useCallback(async () => {
     try {
-      const response = await fetch(`/api/forms/${formId}`);
+      const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch form details.');
       }
@@ -48,7 +42,7 @@ const FormResults: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/submissions?form_id=${formId}`);
+      const response = await fetch(`${config.API_BASE_URL}/api/submissions?form_id=${formId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch submissions.');
       }
@@ -60,6 +54,13 @@ const FormResults: React.FC = () => {
       setIsLoading(false);
     }
   }, [formId]);
+
+  useEffect(() => {
+    if (formId) {
+      fetchFormDetails();
+      fetchSubmissions();
+    }
+  }, [formId, fetchFormDetails, fetchSubmissions]);
 
   return (
     <Container className="mt-5">

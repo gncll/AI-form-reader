@@ -3,6 +3,7 @@ import React, { useState, useEffect, FormEvent, useCallback } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import '../App.css'; // Use App.css for styling
+import config from '../config';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -62,19 +63,12 @@ const PublicForm: React.FC = () => {
 
   const displayedQuestion = useTypingEffect(currentQuestion, 30); // Speed set to 30ms
 
-  useEffect(() => {
-    console.log('PublicForm: useEffect triggered with formId:', formId);
-    if (formId) {
-      fetchFormDetails();
-    }
-  }, [formId, fetchFormDetails]);
-
   const fetchFormDetails = useCallback(async () => {
     console.log('PublicForm: Attempting to fetch form details for formId:', formId);
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/forms/${formId}`);
+      const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`);
       if (!response.ok) {
         const errorText = await response.text();
         console.error('PublicForm: Failed to fetch form details. Response:', response.status, errorText);
@@ -93,6 +87,13 @@ const PublicForm: React.FC = () => {
     }
   }, [formId]);
 
+  useEffect(() => {
+    console.log('PublicForm: useEffect triggered with formId:', formId);
+    if (formId) {
+      fetchFormDetails();
+    }
+  }, [formId, fetchFormDetails]);
+
   const fetchNextQuestion = async (history: Message[], currentFormDetails: FormDetails | null = null) => {
     console.log('PublicForm: Attempting to fetch next question. History length:', history.length);
     setIsLoading(true);
@@ -105,7 +106,7 @@ const PublicForm: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/generate_question', {
+      const response = await fetch(`${config.API_BASE_URL}/api/generate_question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ history, form_id: detailsToUse.id }),
