@@ -3,8 +3,11 @@ import React from 'react';
 import { Nav, Form, FormControl, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar: React.FC = () => {
+  const { user, signOut } = useAuth();
+
   return (
     <div className="sidebar bg-dark text-white p-3 d-flex flex-column">
       <div className="user-profile mb-4 d-flex align-items-center">
@@ -13,7 +16,7 @@ const Sidebar: React.FC = () => {
           <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
         </svg>
         <div>
-          <h5 className="mb-0">Mehmet Gencay Işık</h5>
+          <h5 className="mb-0">{user?.email}</h5>
           <div className="d-flex align-items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-circle-fill text-success me-1" viewBox="0 0 16 16">
               <circle cx="8" cy="8" r="8"/>
@@ -48,6 +51,9 @@ const Sidebar: React.FC = () => {
       </Nav>
 
       <div className="mt-auto pt-3 border-top border-secondary">
+        <Button variant="outline-light" size="sm" onClick={signOut} className="w-100 mb-2">
+          Logout
+        </Button>
         <Link to="#" className="text-muted text-decoration-none small">
           Send Feedback
         </Link>
