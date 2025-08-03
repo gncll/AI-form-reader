@@ -28,7 +28,7 @@ const AdminDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8001/forms');
+      const response = await fetch('/api/forms');
       if (!response.ok) {
         throw new Error('Failed to fetch forms.');
       }
@@ -46,7 +46,7 @@ const AdminDashboard: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:8001/forms/${formId}`, {
+      const response = await fetch(`/api/forms/${formId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

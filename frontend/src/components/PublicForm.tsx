@@ -79,7 +79,7 @@ const PublicForm: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:8001/forms/${formId}`);
+      const response = await fetch(`/api/forms/${formId}`);
       if (!response.ok) {
         const errorText = await response.text();
         console.error('PublicForm: Failed to fetch form details. Response:', response.status, errorText);
@@ -110,7 +110,7 @@ const PublicForm: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8001/generate_question', {
+      const response = await fetch('/api/generate_question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ history, form_id: detailsToUse.id }),

@@ -30,7 +30,7 @@ const FormEditor: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-          const response = await fetch(`http://localhost:8001/forms/${formId}`);
+          const response = await fetch(`/api/forms/${formId}`);
           if (!response.ok) {
             throw new Error('Failed to fetch form data.');
           }
@@ -58,7 +58,7 @@ const FormEditor: React.FC = () => {
     setSuccess(null);
 
     const method = formId ? 'PUT' : 'POST';
-    const url = formId ? `http://localhost:8001/forms/${formId}` : 'http://localhost:8001/forms';
+    const url = formId ? `/api/forms/${formId}` : '/api/forms';
 
     try {
       const response = await fetch(url, {
