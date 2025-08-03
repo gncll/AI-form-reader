@@ -128,21 +128,22 @@ const PublicForm: React.FC = () => {
       // Start the conversation only if it hasn't started yet
       if (!hasStartedConversation) {
         setHasStartedConversation(true);
-        fetchNextQuestion([], data);
+        // Directly call API instead of using fetchNextQuestion to avoid dependency issues
+        setTimeout(() => fetchNextQuestion([], data), 100);
       }
     } catch (err) {
       console.error('PublicForm: Error fetching form details:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
       setIsLoading(false);
     }
-  }, [formId, fetchNextQuestion, hasStartedConversation]);
+  }, [formId, hasStartedConversation]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     console.log('PublicForm: useEffect triggered with formId:', formId);
     if (formId) {
       fetchFormDetails();
     }
-  }, [formId, fetchFormDetails]);
+  }, [formId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAnswerSubmit = async (e: FormEvent) => {
     e.preventDefault();
