@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -154,4 +155,5 @@ app.listen(PORT, () => {
   console.log(`📋 Forms API: http://localhost:${PORT}/api/forms`);
   console.log(`🤖 Generate Question: http://localhost:${PORT}/api/generate_question`);
   console.log(`📊 Submissions: http://localhost:${PORT}/api/submissions`);
+  console.log(`🔑 OpenAI API Key available: ${process.env.OPENAI_API_KEY ? 'YES' : 'NO'}`);
 });

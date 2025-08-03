@@ -2,7 +2,7 @@
 import React, { useState, useEffect, FormEvent, useCallback } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import '../App.css'; // Use App.css for styling
+import '../App.css';
 import config from '../config';
 
 interface Message {
@@ -92,7 +92,7 @@ const PublicForm: React.FC = () => {
     if (formId) {
       fetchFormDetails();
     }
-  }, [formId, fetchFormDetails]);
+  }, [formId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchNextQuestion = async (history: Message[], currentFormDetails: FormDetails | null = null) => {
     console.log('PublicForm: Attempting to fetch next question. History length:', history.length);

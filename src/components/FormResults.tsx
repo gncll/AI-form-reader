@@ -60,7 +60,7 @@ const FormResults: React.FC = () => {
       fetchFormDetails();
       fetchSubmissions();
     }
-  }, [formId, fetchFormDetails, fetchSubmissions]);
+  }, [formId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Container className="mt-5">
