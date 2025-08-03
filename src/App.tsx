@@ -13,14 +13,14 @@ import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public form route without sidebar */}
-          <Route path="/form/:formId" element={<PublicForm />} />
-          
-          {/* Protected admin routes with sidebar */}
-          <Route path="/*" element={
+    <Router>
+      <Routes>
+        {/* Public form route - completely separate from auth */}
+        <Route path="/form/:formId" element={<PublicForm />} />
+        
+        {/* Protected admin routes with auth */}
+        <Route path="/*" element={
+          <AuthProvider>
             <ProtectedRoute>
               <div className="d-flex">
                 <Sidebar />
@@ -35,10 +35,10 @@ function App() {
                 </div>
               </div>
             </ProtectedRoute>
-          } />
-        </Routes>
-      </Router>
-    </AuthProvider>
+          </AuthProvider>
+        } />
+      </Routes>
+    </Router>
   );
 }
 
