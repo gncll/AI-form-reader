@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+import React, { useState, useEffect, FormEvent, useCallback, useRef } from 'react';
 import { Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import '../App.css';
@@ -62,6 +62,7 @@ const PublicForm: React.FC = () => {
   const [isConversationComplete, setIsConversationComplete] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
   const [hasStartedConversation, setHasStartedConversation] = useState(false);
+  const hasStartedRef = useRef(false);
 
   const displayedQuestion = useTypingEffect(currentQuestion, 30); // Speed set to 30ms
 
@@ -126,7 +127,8 @@ const PublicForm: React.FC = () => {
       setFormDetails(data);
       setIsLoading(false);
       // Start the conversation only if it hasn't started yet
-      if (!hasStartedConversation) {
+      if (!hasStartedRef.current) {
+        hasStartedRef.current = true;
         setHasStartedConversation(true);
         // Directly call API instead of using fetchNextQuestion to avoid dependency issues
         setTimeout(() => fetchNextQuestion([], data), 100);
@@ -136,7 +138,7 @@ const PublicForm: React.FC = () => {
       setError(err instanceof Error ? err.message : 'An unknown error occurred while fetching form details.');
       setIsLoading(false);
     }
-  }, [formId, hasStartedConversation]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     console.log('PublicForm: useEffect triggered with formId:', formId);
