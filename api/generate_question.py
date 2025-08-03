@@ -2,7 +2,53 @@ from http.server import BaseHTTPRequestHandler
 import json
 import os
 import requests
-from _utils import get_form_by_id, create_submission
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+
+# Simple JSON-based storage for Vercel
+FORMS_FILE = '/tmp/forms.json'
+SUBMISSIONS_FILE = '/tmp/submissions.json'
+
+def get_forms() -> List[Dict[str, Any]]:
+    if not os.path.exists(FORMS_FILE):
+        return []
+    try:
+        with open(FORMS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def get_form_by_id(form_id: int) -> Optional[Dict[str, Any]]:
+    forms = get_forms()
+    for form in forms:
+        if form['id'] == form_id:
+            return form
+    return None
+
+def get_submissions() -> List[Dict[str, Any]]:
+    if not os.path.exists(SUBMISSIONS_FILE):
+        return []
+    try:
+        with open(SUBMISSIONS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_submissions(submissions: List[Dict[str, Any]]) -> None:
+    with open(SUBMISSIONS_FILE, 'w') as f:
+        json.dump(submissions, f, indent=2)
+
+def create_submission(form_id: int, summary: str) -> Dict[str, Any]:
+    submissions = get_submissions()
+    new_submission = {
+        'id': len(submissions) + 1,
+        'form_id': form_id,
+        'summary': summary,
+        'created_at': datetime.now().isoformat()
+    }
+    submissions.append(new_submission)
+    save_submissions(submissions)
+    return new_submission
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):

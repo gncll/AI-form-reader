@@ -1,22 +1,15 @@
 {
-  "functions": {
-    "api/forms.py": {
-      "runtime": "python3.9"
-    },
-    "api/generate_question.py": {
-      "runtime": "python3.9"
-    },
-    "api/submissions.py": {
-      "runtime": "python3.9"
-    }
-  },
   "builds": [
     {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "frontend/build"
+        "distDir": "build"
       }
+    },
+    {
+      "src": "api/*.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
@@ -28,6 +21,5 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ],
-  "outputDirectory": "frontend/build"
+  ]
 }

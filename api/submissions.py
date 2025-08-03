@@ -1,7 +1,24 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import urllib.parse
-from _utils import get_submissions_by_form_id
+import os
+from typing import List, Dict, Any
+
+# Simple JSON-based storage for Vercel
+SUBMISSIONS_FILE = '/tmp/submissions.json'
+
+def get_submissions() -> List[Dict[str, Any]]:
+    if not os.path.exists(SUBMISSIONS_FILE):
+        return []
+    try:
+        with open(SUBMISSIONS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def get_submissions_by_form_id(form_id: int) -> List[Dict[str, Any]]:
+    submissions = get_submissions()
+    return [sub for sub in submissions if sub['form_id'] == form_id]
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
