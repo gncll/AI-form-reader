@@ -1,24 +1,10 @@
-// Simple in-memory storage for demo (replace with real DB later)
-let forms = [
-  {
-    id: 1,
-    name: "Substack",
-    goal: "Act like a Gencay I and ask 5 different questions to make sure your substack users is satisfied or collect feedbacks.",
-    ai_model: "gpt-4o-mini",
-    ai_tone: "professional and friendly",
-    created_at: "2025-08-02 14:41:20"
-  },
-  {
-    id: 2,
-    name: "Medium",
-    goal: "Act like a Gencay I., warmly welcome the user and ask questions to see whether reader like or not or what kind of content the user wants.",
-    ai_model: "gpt-4o-mini", 
-    ai_tone: "professional and friendly",
-    created_at: "2025-08-02 15:12:24"
-  }
-];
+import { createClient } from '@supabase/supabase-js'
 
-export default function handler(req, res) {
+const supabaseUrl = 'https://ehcazveenuygfvkehzwj.supabase.co'
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoY2F6dmVlbnV5Z2Z2a2VoendqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMzAwMDcsImV4cCI6MjA2OTgwNjAwN30.gl6UsgN6zYvvGUMCpg0NbM3tpG5rPmb3-C-4BcbWQXI'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -34,6 +20,16 @@ export default function handler(req, res) {
     switch (req.method) {
       case 'GET':
         // Get all forms
+        const { data: forms, error: getError } = await supabase
+          .from('forms')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (getError) {
+          console.error('Supabase GET error:', getError);
+          return res.status(500).json({ error: 'Failed to fetch forms' });
+        }
+        
         return res.status(200).json(forms);
 
       case 'POST':
@@ -44,16 +40,17 @@ export default function handler(req, res) {
           return res.status(400).json({ error: 'Name and goal are required' });
         }
 
-        const newForm = {
-          id: forms.length + 1,
-          name,
-          goal,
-          ai_model,
-          ai_tone,
-          created_at: new Date().toISOString()
-        };
+        const { data: newForm, error: createError } = await supabase
+          .from('forms')
+          .insert([{ name, goal, ai_model, ai_tone }])
+          .select()
+          .single();
 
-        forms.push(newForm);
+        if (createError) {
+          console.error('Supabase CREATE error:', createError);
+          return res.status(500).json({ error: 'Failed to create form' });
+        }
+
         return res.status(201).json(newForm);
 
       default:

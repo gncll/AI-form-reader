@@ -1,24 +1,10 @@
-// Simple in-memory storage for demo (replace with real DB later)
-let forms = [
-  {
-    id: 1,
-    name: "Substack",
-    goal: "Act like a Gencay I and ask 5 different questions to make sure your substack users is satisfied or collect feedbacks.",
-    ai_model: "gpt-4o-mini",
-    ai_tone: "professional and friendly",
-    created_at: "2025-08-02 14:41:20"
-  },
-  {
-    id: 2,
-    name: "Medium",
-    goal: "Act like a Gencay I., warmly welcome the user and ask questions to see whether reader like or not or what kind of content the user wants.",
-    ai_model: "gpt-4o-mini", 
-    ai_tone: "professional and friendly",
-    created_at: "2025-08-02 15:12:24"
-  }
-];
+import { createClient } from '@supabase/supabase-js'
 
-export default function handler(req, res) {
+const supabaseUrl = 'https://ehcazveenuygfvkehzwj.supabase.co'
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoY2F6dmVlbnV5Z2Z2a2VoendqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMzAwMDcsImV4cCI6MjA2OTgwNjAwN30.gl6UsgN6zYvvGUMCpg0NbM3tpG5rPmb3-C-4BcbWQXI'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
@@ -37,22 +23,32 @@ export default function handler(req, res) {
     switch (method) {
       case 'GET':
         // Get specific form
-        const form = forms.find(f => f.id === formId);
-        if (form) {
-          return res.status(200).json(form);
-        } else {
+        const { data: form, error: getError } = await supabase
+          .from('forms')
+          .select('*')
+          .eq('id', formId)
+          .single();
+          
+        if (getError) {
+          console.error('Supabase GET form error:', getError);
           return res.status(404).json({ error: 'Form not found' });
         }
+        
+        return res.status(200).json(form);
 
       case 'DELETE':
         // Delete form
-        const index = forms.findIndex(f => f.id === formId);
-        if (index !== -1) {
-          forms.splice(index, 1);
-          return res.status(200).json({ message: 'Form deleted successfully' });
-        } else {
-          return res.status(404).json({ error: 'Form not found' });
+        const { error: deleteError } = await supabase
+          .from('forms')
+          .delete()
+          .eq('id', formId);
+          
+        if (deleteError) {
+          console.error('Supabase DELETE error:', deleteError);
+          return res.status(500).json({ error: 'Failed to delete form' });
         }
+        
+        return res.status(200).json({ message: 'Form deleted successfully' });
 
       default:
         return res.status(405).json({ error: 'Method not allowed' });
