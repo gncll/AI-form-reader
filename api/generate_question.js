@@ -1,22 +1,8 @@
-// Simple in-memory storage
-let forms = [
-  {
-    id: 1,
-    name: "Substack",
-    goal: "Act like a Gencay I and ask 5 different questions to make sure your substack users is satisfied or collect feedbacks.",
-    ai_model: "gpt-4o-mini",
-    ai_tone: "professional and friendly"
-  },
-  {
-    id: 2,
-    name: "Medium", 
-    goal: "Act like a Gencay I., warmly welcome the user and ask questions to see whether reader like or not or what kind of content the user wants.",
-    ai_model: "gpt-4o-mini",
-    ai_tone: "professional and friendly"
-  }
-];
+import { createClient } from '@supabase/supabase-js'
 
-let submissions = [];
+const supabaseUrl = 'https://ehcazveenuygfvkehzwj.supabase.co'
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoY2F6dmVlbnV5Z2Z2a2VoendqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMzAwMDcsImV4cCI6MjA2OTgwNjAwN30.gl6UsgN6zYvvGUMCpg0NbM3tpG5rPmb3-C-4BcbWQXI'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -39,26 +25,35 @@ export default async function handler(req, res) {
       return res.status(400).json({ detail: 'form_id and history are required' });
     }
 
-    // Get form details
-    const form = forms.find(f => f.id === form_id);
-    if (!form) {
+    // Get form details from Supabase
+    const { data: form, error: getError } = await supabase
+      .from('forms')
+      .select('*')
+      .eq('id', form_id)
+      .single();
+      
+    if (getError || !form) {
+      console.error('Supabase GET form error:', getError);
       return res.status(404).json({ detail: 'Form not found' });
     }
 
     // Generate next question using OpenAI
     const nextQuestion = await generateQuestionWithOpenAI(form, history);
 
-    // If conversation is complete, save submission
+    // If conversation is complete, save submission to Supabase
     if (nextQuestion.includes("Thank you for your time")) {
       const userResponses = history.filter(msg => msg.role === 'user').map(msg => msg.content);
       const summary = userResponses.join(" | ");
       
-      submissions.push({
-        id: submissions.length + 1,
-        form_id,
-        summary,
-        created_at: new Date().toISOString()
-      });
+      const { error: insertError } = await supabase
+        .from('submissions')
+        .insert([{ form_id, summary }]);
+        
+      if (insertError) {
+        console.error('Supabase submission save error:', insertError);
+      } else {
+        console.log('Submission saved to Supabase:', { form_id, summary });
+      }
     }
 
     return res.status(200).json({ next_question: nextQuestion });
