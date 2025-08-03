@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import config from '../config';
 
 interface FormInput {
   name: string;
@@ -30,7 +31,7 @@ const FormEditor: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-          const response = await fetch(`/api/forms/${formId}`);
+          const response = await fetch(`${config.API_BASE_URL}/api/forms/${formId}`);
           if (!response.ok) {
             throw new Error('Failed to fetch form data.');
           }
@@ -58,7 +59,7 @@ const FormEditor: React.FC = () => {
     setSuccess(null);
 
     const method = formId ? 'PUT' : 'POST';
-    const url = formId ? `/api/forms/${formId}` : '/api/forms';
+    const url = formId ? `${config.API_BASE_URL}/api/forms/${formId}` : `${config.API_BASE_URL}/api/forms`;
 
     try {
       const response = await fetch(url, {
