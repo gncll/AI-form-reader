@@ -21,40 +21,38 @@ let forms = [
 export default function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  console.log('API Forms called:', req.method, req.body);
+  const { query, method } = req;
+  const formId = parseInt(query.id);
+
+  console.log('API Forms/[id] called:', method, formId);
 
   try {
-    switch (req.method) {
+    switch (method) {
       case 'GET':
-        // Get all forms
-        return res.status(200).json(forms);
-
-      case 'POST':
-        // Create new form
-        const { name, goal, ai_model = 'gpt-4o-mini', ai_tone = 'professional and friendly' } = req.body;
-        
-        if (!name || !goal) {
-          return res.status(400).json({ error: 'Name and goal are required' });
+        // Get specific form
+        const form = forms.find(f => f.id === formId);
+        if (form) {
+          return res.status(200).json(form);
+        } else {
+          return res.status(404).json({ error: 'Form not found' });
         }
 
-        const newForm = {
-          id: forms.length + 1,
-          name,
-          goal,
-          ai_model,
-          ai_tone,
-          created_at: new Date().toISOString()
-        };
-
-        forms.push(newForm);
-        return res.status(201).json(newForm);
+      case 'DELETE':
+        // Delete form
+        const index = forms.findIndex(f => f.id === formId);
+        if (index !== -1) {
+          forms.splice(index, 1);
+          return res.status(200).json({ message: 'Form deleted successfully' });
+        } else {
+          return res.status(404).json({ error: 'Form not found' });
+        }
 
       default:
         return res.status(405).json({ error: 'Method not allowed' });

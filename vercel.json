@@ -1,13 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "frontend/package.json", 
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -15,7 +6,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/$1"
+      "destination": "/$1"
     }
   ]
 }
