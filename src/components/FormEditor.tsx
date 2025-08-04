@@ -6,8 +6,8 @@ import config from '../config';
 
 interface FormInput {
   name: string;
-  goal: string;
   prompt: string;
+  question_count: number;
   ai_model: string;
   ai_tone: string;
 }
@@ -17,10 +17,10 @@ const FormEditor: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormInput>({
     name: '',
-    goal: '',
     prompt: '',
+    question_count: 5,
     ai_model: 'gpt-4o-mini',
-    ai_tone: 'professional and friendly',
+    ai_tone: 'professional',
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -119,34 +119,40 @@ const FormEditor: React.FC = () => {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Form Goal (for AI)</Form.Label>
+          <Form.Label>Custom Instructions</Form.Label>
           <Form.Control
             as="textarea"
-            rows={3}
-            name="goal"
-            value={formData.goal}
+            rows={5}
+            name="prompt"
+            value={formData.prompt}
             onChange={handleChange}
             required
             className="bg-dark text-white border-secondary"
+            placeholder="Detailed instructions for the AI: What information to collect, conversation style, specific questions to ask, etc..."
           />
           <Form.Text className="text-muted">
-            e.g., "Gather feedback on a new product feature" or "Collect user preferences for a custom software solution."
+            Tell the AI exactly how to conduct the interview, what questions to ask, and what information to collect.
           </Form.Text>
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Custom AI Prompt (Optional)</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={4}
-            name="prompt"
-            value={formData.prompt}
+          <Form.Label>Number of Questions</Form.Label>
+          <Form.Select
+            name="question_count"
+            value={formData.question_count}
             onChange={handleChange}
             className="bg-dark text-white border-secondary"
-            placeholder="Custom instructions for AI behavior, specific questions to ask, or conversation flow..."
-          />
+          >
+            <option value={3}>3 Questions</option>
+            <option value={4}>4 Questions</option>
+            <option value={5}>5 Questions</option>
+            <option value={6}>6 Questions</option>
+            <option value={7}>7 Questions</option>
+            <option value={8}>8 Questions</option>
+            <option value={10}>10 Questions</option>
+          </Form.Select>
           <Form.Text className="text-muted">
-            If provided, this will override the default AI behavior. Leave empty to use the standard form interview approach.
+            How many questions should the AI ask before concluding the interview?
           </Form.Text>
         </Form.Group>
 
@@ -166,15 +172,25 @@ const FormEditor: React.FC = () => {
 
         <Form.Group className="mb-3">
           <Form.Label>AI Tone</Form.Label>
-          <Form.Control
-            type="text"
+          <Form.Select
             name="ai_tone"
             value={formData.ai_tone}
             onChange={handleChange}
             className="bg-dark text-white border-secondary"
-          />
+          >
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="casual">Casual</option>
+            <option value="formal">Formal</option>
+            <option value="enthusiastic">Enthusiastic</option>
+            <option value="empathetic">Empathetic</option>
+            <option value="direct">Direct</option>
+            <option value="conversational">Conversational</option>
+            <option value="warm">Warm</option>
+            <option value="concise">Concise</option>
+          </Form.Select>
           <Form.Text className="text-muted">
-            e.g., "professional and friendly", "casual and humorous", "formal and direct".
+            Choose the conversational tone for the AI interviewer.
           </Form.Text>
         </Form.Group>
 

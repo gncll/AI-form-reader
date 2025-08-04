@@ -74,23 +74,21 @@ async function generateQuestionWithOpenAI(form, history) {
     throw new Error("OpenAI API key not configured");
   }
 
-  // Build conversation context
-  const systemContent = form.prompt ? 
-    `${form.prompt}
+  // Build conversation context with custom instructions + question count + tone
+  const systemContent = `${form.prompt}
 
-IMPORTANT: Always conclude with "Thank you for your time! Your responses have been recorded." when the conversation should end.` :
-    `You are a helpful assistant conducting a form interview. 
+CONVERSATION SETTINGS:
+- Tone: ${form.ai_tone}
+- Total Questions: ${form.question_count || 5}
+- ALWAYS ask for email address at some point during the conversation
 
-Form Goal: ${form.goal}
-Tone: ${form.ai_tone}
-
-Rules:
+IMPORTANT RULES:
 1. Ask ONE question at a time
-2. Keep questions conversational and engaging
-3. ALWAYS ask for email address at some point during the conversation
-4. After 3-5 meaningful questions (including email), conclude with "Thank you for your time! Your responses have been recorded."
-5. Don't repeat questions
-6. Build upon previous answers`;
+2. Keep questions conversational and engaging  
+3. After exactly ${form.question_count || 5} meaningful questions (including email), conclude with "Thank you for your time! Your responses have been recorded."
+4. Don't repeat questions
+5. Build upon previous answers
+6. Follow the custom instructions above exactly`;
 
   const messages = [
     {
