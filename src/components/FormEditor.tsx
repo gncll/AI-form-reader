@@ -7,6 +7,7 @@ import config from '../config';
 interface FormInput {
   name: string;
   goal: string;
+  prompt: string;
   ai_model: string;
   ai_tone: string;
 }
@@ -17,6 +18,7 @@ const FormEditor: React.FC = () => {
   const [formData, setFormData] = useState<FormInput>({
     name: '',
     goal: '',
+    prompt: '',
     ai_model: 'gpt-4o-mini',
     ai_tone: 'professional and friendly',
   });
@@ -129,6 +131,22 @@ const FormEditor: React.FC = () => {
           />
           <Form.Text className="text-muted">
             e.g., "Gather feedback on a new product feature" or "Collect user preferences for a custom software solution."
+          </Form.Text>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Custom AI Prompt (Optional)</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={4}
+            name="prompt"
+            value={formData.prompt}
+            onChange={handleChange}
+            className="bg-dark text-white border-secondary"
+            placeholder="Custom instructions for AI behavior, specific questions to ask, or conversation flow..."
+          />
+          <Form.Text className="text-muted">
+            If provided, this will override the default AI behavior. Leave empty to use the standard form interview approach.
           </Form.Text>
         </Form.Group>
 

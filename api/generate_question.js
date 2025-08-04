@@ -75,10 +75,11 @@ async function generateQuestionWithOpenAI(form, history) {
   }
 
   // Build conversation context
-  const messages = [
-    {
-      role: "system",
-      content: `You are a helpful assistant conducting a form interview. 
+  const systemContent = form.prompt ? 
+    `${form.prompt}
+
+IMPORTANT: Always conclude with "Thank you for your time! Your responses have been recorded." when the conversation should end.` :
+    `You are a helpful assistant conducting a form interview. 
 
 Form Goal: ${form.goal}
 Tone: ${form.ai_tone}
@@ -89,7 +90,12 @@ Rules:
 3. ALWAYS ask for email address at some point during the conversation
 4. After 3-5 meaningful questions (including email), conclude with "Thank you for your time! Your responses have been recorded."
 5. Don't repeat questions
-6. Build upon previous answers`
+6. Build upon previous answers`;
+
+  const messages = [
+    {
+      role: "system",
+      content: systemContent
     }
   ];
 

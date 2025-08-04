@@ -90,6 +90,9 @@ body {
     font-size: 1.3rem !important;
     box-shadow: none !important;
     resize: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 80px !important;
 }
 
 .form-control:focus {
