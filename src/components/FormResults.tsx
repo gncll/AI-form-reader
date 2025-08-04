@@ -8,6 +8,7 @@ interface Submission {
   id: number;
   form_id: number;
   summary: string;
+  email: string | null;
   created_at: string;
 }
 
@@ -86,6 +87,7 @@ const FormResults: React.FC = () => {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Email</th>
                 <th>Summary</th>
                 <th>Submitted At</th>
               </tr>
@@ -94,6 +96,7 @@ const FormResults: React.FC = () => {
               {submissions.map((submission) => (
                 <tr key={submission.id}>
                   <td>{submission.id}</td>
+                  <td>{submission.email || 'Not provided'}</td>
                   <td>
                     <Card bg="secondary" text="white" className="mb-2">
                       <Card.Body style={{ whiteSpace: 'pre-wrap' }}>{submission.summary}</Card.Body>

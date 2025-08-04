@@ -7,7 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -52,6 +52,29 @@ export default async function handler(req, res) {
         }
 
         return res.status(201).json(newForm);
+
+      case 'PUT':
+        // Update existing form
+        const formId = req.url.split('/').pop(); // Get ID from URL path
+        const updateData = req.body;
+        
+        if (!formId || isNaN(formId)) {
+          return res.status(400).json({ error: 'Valid form ID is required' });
+        }
+
+        const { data: updatedForm, error: updateError } = await supabase
+          .from('forms')
+          .update(updateData)
+          .eq('id', formId)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Supabase UPDATE error:', updateError);
+          return res.status(500).json({ error: 'Failed to update form' });
+        }
+
+        return res.status(200).json(updatedForm);
 
       default:
         return res.status(405).json({ error: 'Method not allowed' });

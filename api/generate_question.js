@@ -45,9 +45,13 @@ export default async function handler(req, res) {
       const userResponses = history.filter(msg => msg.role === 'user').map(msg => msg.content);
       const summary = userResponses.join(" | ");
       
+      // Extract email from responses using regex
+      const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+      const email = userResponses.join(" ").match(emailRegex)?.[0] || null;
+      
       const { error: insertError } = await supabase
         .from('submissions')
-        .insert([{ form_id, summary }]);
+        .insert([{ form_id, summary, email }]);
         
       if (insertError) {
         console.error('Supabase submission save error:', insertError);
@@ -82,9 +86,10 @@ Tone: ${form.ai_tone}
 Rules:
 1. Ask ONE question at a time
 2. Keep questions conversational and engaging
-3. After 3-5 meaningful questions, conclude with "Thank you for your time! Your responses have been recorded."
-4. Don't repeat questions
-5. Build upon previous answers`
+3. ALWAYS ask for email address at some point during the conversation
+4. After 3-5 meaningful questions (including email), conclude with "Thank you for your time! Your responses have been recorded."
+5. Don't repeat questions
+6. Build upon previous answers`
     }
   ];
 
