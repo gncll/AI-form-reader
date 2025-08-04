@@ -61,7 +61,7 @@ body {
 }
 
 .form-container {
-    max-width: 700px;
+    max-width: 900px;
     padding: 2rem;
     width: 100%;
     margin: auto; /* Center the form within its content area */
@@ -125,7 +125,7 @@ body {
 
 .intro-container {
     text-align: center;
-    max-width: 700px;
+    max-width: 900px;
     padding: 2rem;
     margin: auto; /* Center the intro container */
 }
