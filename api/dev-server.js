@@ -15,17 +15,19 @@ let forms = [
   {
     id: 1,
     name: "Substack",
-    goal: "Act like a Gencay I and ask 5 different questions to make sure your substack users is satisfied or collect feedbacks.",
+    prompt: "Act like a Gencay I and ask 5 different questions to make sure your substack users is satisfied or collect feedbacks.",
+    question_count: 5,
     ai_model: "gpt-4o-mini",
-    ai_tone: "professional and friendly",
+    ai_tone: "professional",
     created_at: "2025-08-02 14:41:20"
   },
   {
     id: 2,
     name: "Medium",
-    goal: "Act like a Gencay I., warmly welcome the user and ask questions to see whether reader like or not or what kind of content the user wants.",
-    ai_model: "gpt-4o-mini", 
-    ai_tone: "professional and friendly",
+    prompt: "Act like a Gencay I., warmly welcome the user and ask questions to see whether reader like or not or what kind of content the user wants.",
+    question_count: 5,
+    ai_model: "gpt-4o-mini",
+    ai_tone: "professional",
     created_at: "2025-08-02 15:12:24"
   }
 ];
@@ -63,6 +65,29 @@ app.post('/api/forms', (req, res) => {
 
   forms.push(newForm);
   res.status(201).json(newForm);
+});
+
+// UPDATE form
+app.put('/api/forms/:id', (req, res) => {
+  const formId = parseInt(req.params.id);
+  const formIndex = forms.findIndex(f => f.id === formId);
+
+  if (formIndex === -1) {
+    return res.status(404).json({ error: 'Form not found' });
+  }
+
+  const { name, prompt, question_count, ai_model, ai_tone } = req.body;
+
+  forms[formIndex] = {
+    ...forms[formIndex],
+    name: name || forms[formIndex].name,
+    prompt: prompt || forms[formIndex].prompt,
+    question_count: question_count || forms[formIndex].question_count,
+    ai_model: ai_model || forms[formIndex].ai_model,
+    ai_tone: ai_tone || forms[formIndex].ai_tone,
+  };
+
+  res.json(forms[formIndex]);
 });
 
 app.post('/api/generate_question', async (req, res) => {
@@ -111,7 +136,7 @@ async function generateQuestionWithOpenAI(form, history) {
       role: "system",
       content: `You are a helpful assistant conducting a form interview. 
 
-Form Goal: ${form.goal}
+Form Goal: ${form.prompt}
 Tone: ${form.ai_tone}
 
 Rules:
